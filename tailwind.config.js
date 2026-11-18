@@ -7,19 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        pureBlack: "#000000",
-        brandGray: "#A3A3A3",
-        brandMuted: "#737373",
+        boneWhite: "#f6f4ee",
       },
       fontFamily: {
-        syne: ["'Syne'", "sans-serif"],
-        cinzel: ["'Cinzel'", "serif"],
-        oswald: ["'Oswald'", "sans-serif"],
-        space: ["'Space Grotesk'", "sans-serif"],
-      },
-      letterSpacing: {
-        'pre-title': '0.45em',
-        'sub-status': '0.55em',
+        bodoni: ["'BodoniAntComDDemBol'", "serif"],
+        daniel: ["'Daniel'", "cursive"],
       },
     },
   },
