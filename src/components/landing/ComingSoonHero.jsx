@@ -4,41 +4,47 @@ import { FONT_PRESETS, ACTIVE_PRESET } from '../../constants/typography';
 export default function ComingSoonHero({ preset = ACTIVE_PRESET }) {
   const currentFont = FONT_PRESETS[preset] || FONT_PRESETS['avant-garde'];
   const headlineRef = useRef(null);
-  const containerRef = useRef(null);
 
   useEffect(() => {
     const fitText = () => {
       const el = headlineRef.current;
-      const container = containerRef.current;
-      if (!el || !container) return;
+      if (!el) return;
 
-      // Reset dulu ke ukuran maksimal
-      el.style.fontSize = '72px';
+      // Ukur batas yang tersedia: lebar viewport dikurangi safe padding
+      const maxWidth = window.innerWidth - 48; // 24px kiri + 24px kanan
 
-      // Kurangi ukuran font sampai teks pas dalam container
-      while (el.scrollWidth > container.clientWidth && parseFloat(el.style.fontSize) > 10) {
-        el.style.fontSize = (parseFloat(el.style.fontSize) - 1) + 'px';
+      // Mulai dari ukuran besar, turunkan sampai benar-benar muat
+      let size = 120;
+      el.style.fontSize = size + 'px';
+
+      while (el.scrollWidth > maxWidth && size > 8) {
+        size -= 0.5;
+        el.style.fontSize = size + 'px';
       }
     };
 
-    fitText();
+    // Jalankan setelah font Google Fonts benar-benar load
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(fitText);
+    } else {
+      // Fallback jika fonts.ready tidak tersedia
+      setTimeout(fitText, 300);
+    }
+
     window.addEventListener('resize', fitText);
     return () => window.removeEventListener('resize', fitText);
   }, []);
 
   return (
     <main
-      className="w-screen bg-[#000000] flex flex-col items-center justify-center select-none overflow-hidden"
-      style={{ minHeight: '100dvh' }}
+      className="bg-[#000000] flex flex-col items-center justify-center select-none"
+      style={{ minHeight: '100dvh', width: '100vw', overflow: 'hidden' }}
       role="main"
       aria-label="SAINTMOLLY.COM Coming Soon"
     >
-      <div
-        ref={containerRef}
-        className="flex flex-col items-center justify-center text-center w-full px-6 gap-3 md:gap-5"
-        style={{ maxWidth: '100%' }}
-      >
-        {/* Pre-title: WELCOME */}
+      <div className="flex flex-col items-center justify-center text-center gap-3 md:gap-5 w-full">
+
+        {/* Pre-title */}
         <p
           className="font-space text-[11px] md:text-[13px] uppercase text-[#A3A3A3] tracking-[0.45em] pl-[0.45em] whitespace-nowrap"
           aria-label="Welcome"
@@ -46,22 +52,23 @@ export default function ComingSoonHero({ preset = ACTIVE_PRESET }) {
           WELCOME
         </p>
 
-        {/* Brand Headline: auto-fit, tidak akan pernah terpotong */}
+        {/* Brand Headline — auto-fit setelah font load */}
         <h1
           ref={headlineRef}
           className={`${currentFont.className} uppercase text-[#FFFFFF] leading-none whitespace-nowrap`}
-          style={{ display: 'block', width: '100%', textAlign: 'center' }}
+          style={{ fontSize: '1px', display: 'block', textAlign: 'center' }}
         >
           SAINTMOLLY.COM
         </h1>
 
-        {/* Status: COMING SOON */}
+        {/* Status Subtitle */}
         <p
           className="font-space text-[9px] md:text-[11px] uppercase text-[#737373] tracking-[0.55em] pl-[0.55em] whitespace-nowrap"
           aria-label="Coming Soon"
         >
           COMING SOON
         </p>
+
       </div>
     </main>
   );
